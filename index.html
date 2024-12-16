@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tile Pairing Interface</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React and ReactDOM -->
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // Create basic button component to replace shadcn
+        const Button = React.forwardRef(({ className = "", variant = "default", size = "default", children, ...props }, ref) => {
+            const baseStyles = "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50";
+            const variants = {
+                default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
+                outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+            };
+            const sizes = {
+                default: "h-9 px-4 py-2",
+                sm: "h-8 rounded-md px-3 text-xs",
+            };
+            
+            return (
+                <button
+                    className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
+                    ref={ref}
+                    {...props}
+                >
+                    {children}
+                </button>
+            );
+        });
+
+        // Main component
+        const TilePairingInterface = () => {
+            // [Previous component code goes here - same as before but without the imports]
+        };
+
+        // Render the app
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<TilePairingInterface />);
+    </script>
+</body>
+</html>
