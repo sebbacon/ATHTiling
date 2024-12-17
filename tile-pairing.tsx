@@ -93,6 +93,59 @@ const TilePairingInterface = () => {
     }
   };
 
+  const handleBulkImport = async (e) => {
+    const files = Array.from(e.target.files);
+    const pairs = new Map();
+    
+    // Group files by their stem
+    files.forEach(file => {
+      const match = file.name.match(/(.+)_(obverse|reverse)\.png$/i);
+      if (match) {
+        const [, stem, side] = match;
+        if (!pairs.has(stem)) {
+          pairs.set(stem, {});
+        }
+        pairs.get(stem)[side.toLowerCase()] = file;
+      }
+    });
+
+    // Create tiles for each pair
+    const newTiles = [];
+    for (const [, pair] of pairs) {
+      if (pair.obverse || pair.reverse) {
+        const tile = {
+          id: Date.now() + Math.random(),
+          front: null,
+          back: null,
+          x: Math.random() * 800,
+          y: Math.random() * 600,
+          rotation: 0,
+          isMirrored: false
+        };
+
+        // Load images
+        if (pair.obverse) {
+          tile.front = await new Promise(resolve => {
+            const reader = new FileReader();
+            reader.onload = e => resolve(e.target.result);
+            reader.readAsDataURL(pair.obverse);
+          });
+        }
+        if (pair.reverse) {
+          tile.back = await new Promise(resolve => {
+            const reader = new FileReader();
+            reader.onload = e => resolve(e.target.result);
+            reader.readAsDataURL(pair.reverse);
+          });
+        }
+
+        newTiles.push(tile);
+      }
+    }
+
+    setTiles([...tiles, ...newTiles]);
+  };
+
   const getTileTransform = (tile) => {
     return `
       translate(${tile.x + centerX}, ${tile.y + centerY})
@@ -105,14 +158,34 @@ const TilePairingInterface = () => {
   return (
     <div className="w-full h-screen flex flex-col">
       <div className="flex justify-between p-4">
-        <Button 
-          onClick={addTilePair}
-          className="flex items-center gap-2"
-          variant="outline"
-        >
-          <ImagePlus className="w-4 h-4" />
-          Add Tile
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            onClick={addTilePair}
+            className="flex items-center gap-2"
+            variant="outline"
+          >
+            <ImagePlus className="w-4 h-4" />
+            Add Tile
+          </Button>
+          <div className="relative">
+            <Button 
+              onClick={() => document.getElementById('bulk-import').click()}
+              className="flex items-center gap-2"
+              variant="outline"
+            >
+              <FolderPlus className="w-4 h-4" />
+              Bulk Import
+            </Button>
+            <input
+              id="bulk-import"
+              type="file"
+              multiple
+              accept=".png"
+              onChange={handleBulkImport}
+              className="hidden"
+            />
+          </div>
+        </div>
         <Button 
           onClick={() => setIsFlipped(!isFlipped)}
           className="flex items-center gap-2"
